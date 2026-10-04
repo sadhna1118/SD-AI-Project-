@@ -40,7 +40,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const { action, ip, port, code } = await request.json();
-    const targetIp = (ip && ip.trim()) ? ip.trim() : 'localhost';
+    let targetIp = (ip && ip.trim()) ? ip.trim() : '';
+    if (!targetIp || targetIp === 'localhost') {
+      targetIp = '192.168.1.6';
+    }
 
     if (!port) {
       return NextResponse.json({ success: false, error: 'Port is required (e.g. 38475)' }, { status: 400 });

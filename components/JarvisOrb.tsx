@@ -40,7 +40,7 @@ export default function JarvisOrb() {
   // QR & Wireless Connect Modal State
   const [showConnectModal, setShowConnectModal] = useState<boolean>(false);
   const [activeModalTab, setActiveModalTab] = useState<'qr' | 'wireless'>('qr');
-  const [connectIp, setConnectIp] = useState<string>('localhost');
+  const [connectIp, setConnectIp] = useState<string>('192.168.1.6');
   const [connectPort, setConnectPort] = useState<string>('');
   const [pairingCode, setPairingCode] = useState<string>('');
   const [isPairingMode, setIsPairingMode] = useState<boolean>(false);
