@@ -5,8 +5,26 @@ import fs from 'fs';
 
 const execPromise = util.promisify(exec);
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
-const ADB_BIN = process.platform === 'win32' && fs.existsSync('C:\\platform-tools\\adb.exe') ? 'C:\\platform-tools\\adb' : 'adb';
-const execADB = (cmd: string, opts?: any) => execPromise(cmd.replace(/C:\\platform-tools\\adb/g, ADB_BIN), opts);
+async function getFirstActiveDevice(): Promise<string | null> {
+  try {
+    const { stdout } = await execPromise(`${ADB_BIN} devices`);
+    const lines = stdout.split('\n');
+    for (const line of lines) {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length >= 2 && parts[1] === 'device') {
+        return parts[0];
+      }
+    }
+  } catch {}
+  return null;
+}
+
+const execADB = async (cmd: string, opts?: any) => {
+  const deviceId = await getFirstActiveDevice();
+  const serialFlag = deviceId ? `-s ${deviceId} ` : '';
+  const finalCmd = cmd.replace(/C:\\platform-tools\\adb/g, `${ADB_BIN} ${serialFlag}`);
+  return execPromise(finalCmd, opts);
+};
 
 export async function POST(request: Request) {
   try {
